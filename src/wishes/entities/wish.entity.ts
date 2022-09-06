@@ -1,0 +1,65 @@
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToMany,
+  ManyToOne,
+} from 'typeorm';
+import { IsInt, IsEmail, IsNotEmpty, Min, Max, IsUrl } from 'class-validator';
+import { isInt16Array } from 'util/types';
+import { User } from 'src/users/entities/user.entity';
+import { Offer } from 'src/offers/entities/offer.entity';
+import { Wishlist } from 'src/wishlists/entities/wishlist.entity';
+
+@Entity()
+export class Wish {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updateAt: Date;
+
+  @Min(1)
+  @Max(250)
+  @Column()
+  name: string;
+
+  @IsUrl()
+  @Column()
+  link: string;
+
+  @IsUrl()
+  @Column()
+  image: string;
+
+  @IsInt()
+  @Column()
+  price: number;
+
+  @IsInt()
+  @Column()
+  raised: number;
+
+  @ManyToOne(() => User, (owner) => owner.wishes)
+  owner: User;
+
+  @Min(1)
+  @Max(1024)
+  @Column()
+  description: string;
+
+  @OneToMany(() => Offer, (offers) => offers.item)
+  offers: Offer[];
+
+  @IsInt()
+  @Column()
+  copied: number;
+
+  @ManyToOne(() => Wishlist, (wishlist) => wishlist.items)
+  wishlist: Wishlist;
+}
