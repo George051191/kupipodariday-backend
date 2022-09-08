@@ -10,6 +10,7 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import bcrypt from 'bcryptjs';
 
 @Controller('users')
 export class UsersController {
@@ -17,7 +18,12 @@ export class UsersController {
 
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+    const { password, ...res } = createUserDto;
+    return bcrypt
+      .hash(password, 10)
+      .then((hash: string) =>
+        this.usersService.create({ password: hash, ...res }),
+      );
   }
 
   @Get()

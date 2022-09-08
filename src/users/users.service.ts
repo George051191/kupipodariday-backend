@@ -23,6 +23,12 @@ export class UsersService {
     return this.usersRepository.findOneBy({ id });
   }
 
+  find(options: any) {
+    return this.usersRepository.findOne({
+      where: options,
+    });
+  }
+
   async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
     await this.usersRepository.update(id, updateUserDto);
     return this.findOne(id);
