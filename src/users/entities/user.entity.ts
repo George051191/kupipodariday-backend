@@ -6,7 +6,7 @@ import {
   UpdateDateColumn,
   OneToMany,
 } from 'typeorm';
-import { IsEmail, IsNotEmpty, Min, Max, IsUrl } from 'class-validator';
+import { IsEmail, IsNotEmpty, Min, Max, IsUrl, Length } from 'class-validator';
 import { Wish } from 'src/wishes/entities/wish.entity';
 import { Offer } from 'src/offers/entities/offer.entity';
 import { Wishlist } from 'src/wishlists/entities/wishlist.entity';
@@ -23,21 +23,18 @@ export class User {
   updateAt: Date;
 
   @IsNotEmpty()
-  @Min(2)
-  @Max(30)
+  @Length(2, 30)
   @Column({
     unique: true,
   })
   username: string;
 
-  @Min(2)
-  @Max(200)
+  @Length(2, 200)
   @Column({
     default: 'Пока ничего не рассказал о себе',
   })
   about: string;
 
-  @IsUrl()
   @Column({
     default: 'https://i.pravatar.cc/300',
   })

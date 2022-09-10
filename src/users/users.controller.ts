@@ -28,7 +28,7 @@ export class UsersController {
         this.usersService.create({ password: hash, ...res }),
       );
   }
-
+  @UseGuards(JwtGuard)
   @Get()
   findAll() {
     return this.usersService.findAll();
@@ -40,7 +40,7 @@ export class UsersController {
   }
   @UseGuards(JwtGuard)
   @Get('me')
-  findUser(@Req() req) {
+  findUser(@Req() req: any) {
     return this.usersService.find({ username: req.user.username });
   }
 
