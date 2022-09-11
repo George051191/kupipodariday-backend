@@ -34,10 +34,6 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
-  }
   @UseGuards(JwtGuard)
   @Get('me')
   findUser(@Req() req: any) {
@@ -45,9 +41,25 @@ export class UsersController {
   }
 
   @UseGuards(JwtGuard)
+  @Post('find')
+  findMany(@Body() body: { username: string; email: string }) {
+    if (body.username) {
+      return this.usersService.find({ username: body.username });
+    }
+    if (body.email) {
+      return this.usersService.find({ email: body.email });
+    }
+  }
+
+  @UseGuards(JwtGuard)
   @Get(':username')
   findCurrentUser(@Param('username') username: string) {
     return this.usersService.find({ username: username });
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.usersService.findOne(+id);
   }
 
   @UseGuards(JwtGuard)

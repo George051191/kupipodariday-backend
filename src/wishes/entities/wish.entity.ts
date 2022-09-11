@@ -7,7 +7,15 @@ import {
   OneToMany,
   ManyToOne,
 } from 'typeorm';
-import { IsInt, IsEmail, IsNotEmpty, Min, Max, IsUrl } from 'class-validator';
+import {
+  IsInt,
+  IsEmail,
+  IsNotEmpty,
+  Min,
+  Max,
+  IsUrl,
+  Length,
+} from 'class-validator';
 import { isInt16Array } from 'util/types';
 import { User } from 'src/users/entities/user.entity';
 import { Offer } from 'src/offers/entities/offer.entity';
@@ -24,8 +32,7 @@ export class Wish {
   @UpdateDateColumn()
   updateAt: Date;
 
-  @Min(1)
-  @Max(250)
+  @Length(1, 250)
   @Column()
   name: string;
 
@@ -42,7 +49,9 @@ export class Wish {
   price: number;
 
   @IsInt()
-  @Column()
+  @Column({
+    nullable: true,
+  })
   raised: number;
 
   @ManyToOne(() => User, (owner) => owner.wishes)
@@ -57,7 +66,9 @@ export class Wish {
   offers: Offer[];
 
   @IsInt()
-  @Column()
+  @Column({
+    nullable: true,
+  })
   copied: number;
 
   @ManyToOne(() => Wishlist, (wishlist) => wishlist.items)
