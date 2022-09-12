@@ -29,6 +29,10 @@ export class UsersService {
         avatar: true,
         email: true,
       },
+      relations: {
+        wishes: true,
+        offers: true,
+      },
     });
   }
 

@@ -19,8 +19,48 @@ export class WishesService {
     return this.wishesRepository.find();
   }
 
+  findLast() {
+    return this.wishesRepository.find({
+      select: {
+        name: true,
+        price: true,
+        raised: true,
+        link: true,
+        copied: true,
+      },
+      order: {
+        createdAt: 'ASC',
+      },
+      take: 40,
+    });
+  }
+
+  findTops() {
+    return this.wishesRepository.find({
+      select: {
+        name: true,
+        price: true,
+        raised: true,
+        link: true,
+        copied: true,
+      },
+      order: {
+        copied: 'ASC',
+      },
+      take: 20,
+    });
+  }
+
   findOne(id: number) {
-    return this.wishesRepository.findOneBy({ id });
+    return this.wishesRepository.findOne({
+      where: {
+        id: id,
+      },
+      relations: {
+        offers: true,
+        owner: true,
+      },
+    });
   }
 
   async update(id: number, updateWishDto: UpdateWishDto): Promise<Wish> {

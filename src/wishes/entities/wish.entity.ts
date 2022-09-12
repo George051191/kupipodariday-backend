@@ -6,6 +6,8 @@ import {
   UpdateDateColumn,
   OneToMany,
   ManyToOne,
+  JoinColumn,
+  JoinTable,
 } from 'typeorm';
 import {
   IsInt,
@@ -54,7 +56,7 @@ export class Wish {
   })
   raised: number;
 
-  @ManyToOne(() => User, (owner) => owner.wishes)
+  @ManyToOne(() => User, (user) => user.id)
   owner: User;
 
   @Min(1)

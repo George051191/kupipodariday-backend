@@ -12,10 +12,21 @@ import { WishesService } from './wishes.service';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
 import { JwtGuard } from 'src/guards/jwt.guard';
+import { getTreeRepository } from 'typeorm';
 
 @Controller('wishes')
 export class WishesController {
   constructor(private readonly wishesService: WishesService) {}
+
+  @Get('last')
+  getlast() {
+    return this.wishesService.findLast();
+  }
+
+  @Get('top')
+  getTop() {
+    return this.wishesService.findTops();
+  }
 
   @UseGuards(JwtGuard)
   @Post()

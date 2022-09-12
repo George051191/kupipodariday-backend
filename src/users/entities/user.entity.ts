@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
+  JoinTable,
 } from 'typeorm';
 import { IsEmail, IsNotEmpty, Min, Max, IsUrl, Length } from 'class-validator';
 import { Wish } from 'src/wishes/entities/wish.entity';
@@ -29,7 +30,7 @@ export class User {
   })
   username: string;
 
-  @Length(2, 200)
+  @Length(0, 200)
   @Column({
     default: 'Пока ничего не рассказал о себе',
   })
@@ -53,7 +54,7 @@ export class User {
   @OneToMany(() => Wish, (wishes) => wishes.owner)
   wishes: Wish[];
 
-  @OneToMany(() => Offer, (offers) => offers.user)
+  @OneToMany(() => Offer, (offer) => offer.user)
   offers: Offer[];
 
   @OneToMany(() => Wishlist, (wishlists) => wishlists.owner)
