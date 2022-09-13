@@ -6,6 +6,7 @@ import {
   UpdateDateColumn,
   OneToMany,
   JoinTable,
+  ManyToOne,
 } from 'typeorm';
 import { IsEmail, IsNotEmpty, Min, Max, IsUrl, Length } from 'class-validator';
 import { Wish } from 'src/wishes/entities/wish.entity';
@@ -48,7 +49,9 @@ export class User {
   email: string;
 
   @IsNotEmpty()
-  @Column()
+  @Column({
+    select: false,
+  })
   password: string;
 
   @OneToMany(() => Wish, (wishes) => wishes.owner)

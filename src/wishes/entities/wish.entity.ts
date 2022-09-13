@@ -71,6 +71,9 @@ export class Wish {
   @Column({
     nullable: true,
   })
+  @Column({
+    nullable: true,
+  })
   copied: number;
 
   @ManyToOne(() => Wishlist, (wishlist) => wishlist.items)

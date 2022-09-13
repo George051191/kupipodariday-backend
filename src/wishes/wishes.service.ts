@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Wish } from './entities/wish.entity';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class WishesService {
@@ -11,8 +12,12 @@ export class WishesService {
     @InjectRepository(Wish)
     private wishesRepository: Repository<Wish>,
   ) {}
-  create(createWishDto: CreateWishDto) {
-    return this.wishesRepository.save(createWishDto);
+  create(createWishDto: CreateWishDto, owner: User) {
+    return this.wishesRepository.save({
+      ...createWishDto,
+      owner: owner,
+      copied: 0,
+    });
   }
 
   findAll() {
@@ -21,15 +26,15 @@ export class WishesService {
 
   findLast() {
     return this.wishesRepository.find({
-      select: {
-        name: true,
-        price: true,
-        raised: true,
-        link: true,
-        copied: true,
+      relations: {
+        owner: {
+          offers: true,
+          wishes: true,
+          wishlists: true,
+        },
       },
       order: {
-        createdAt: 'ASC',
+        createdAt: 'DESC',
       },
       take: 40,
     });
@@ -37,15 +42,15 @@ export class WishesService {
 
   findTops() {
     return this.wishesRepository.find({
-      select: {
-        name: true,
-        price: true,
-        raised: true,
-        link: true,
-        copied: true,
-      },
       order: {
-        copied: 'ASC',
+        copied: 'DESC',
+      },
+      relations: {
+        owner: {
+          offers: true,
+          wishes: true,
+          wishlists: true,
+        },
       },
       take: 20,
     });
@@ -63,12 +68,43 @@ export class WishesService {
     });
   }
 
-  async update(id: number, updateWishDto: UpdateWishDto): Promise<Wish> {
-    await this.wishesRepository.update(id, updateWishDto);
+  async update(
+    id: number,
+    updateWishDto: UpdateWishDto,
+    owner?: User,
+    copied?: number,
+  ): Promise<Wish> {
+    await this.wishesRepository.update(id, {
+      ...updateWishDto,
+      owner: owner,
+      copied: copied,
+    });
     return this.findOne(id);
+  }
+
+  async updateWithChecks(id: number, updateWishDto: UpdateWishDto, req: any) {
+    const wish = await this.findOne(+id);
+    if (wish.owner.id !== req.user.id) {
+      throw new ForbiddenException();
+    }
+    if (wish.offers.length > 0) {
+      const price = wish.price;
+      return this.update(+id, { ...updateWishDto, price: price });
+    }
+    return this.update(+id, updateWishDto);
   }
 
   async remove(id: number) {
     await this.wishesRepository.delete(id);
+  }
+
+  async removeWithChecks(id: number, req: any) {
+    const wish = await this.findOne(+id);
+    if (wish.owner.id !== req.user.id) {
+      throw new ForbiddenException();
+    }
+
+    await this.remove(id);
+    return wish;
   }
 }

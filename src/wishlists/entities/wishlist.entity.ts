@@ -7,7 +7,7 @@ import {
   OneToMany,
   ManyToOne,
 } from 'typeorm';
-import { IsEmail, IsNotEmpty, Min, Max, IsUrl } from 'class-validator';
+import { IsEmail, IsNotEmpty, Min, Max, IsUrl, Length } from 'class-validator';
 import { Wish } from 'src/wishes/entities/wish.entity';
 import { User } from 'src/users/entities/user.entity';
 
@@ -22,13 +22,11 @@ export class Wishlist {
   @UpdateDateColumn()
   updateAt: Date;
 
-  @Min(1)
-  @Max(250)
+  @Length(1, 250)
   @Column()
   name: string;
 
-  @Min(1)
-  @Max(1500)
+  @Length(1, 1500)
   @Column()
   description: string;
 
@@ -39,6 +37,6 @@ export class Wishlist {
   @OneToMany(() => Wish, (items) => items.wishlist)
   items: Wish[];
 
-  @ManyToOne(() => User, (owner) => owner.wishlists)
+  @ManyToOne(() => User, (user) => user.id)
   owner: User;
 }

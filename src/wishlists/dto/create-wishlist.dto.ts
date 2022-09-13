@@ -1,10 +1,15 @@
-import { IsNotEmpty, Min, Max, IsUrl, max } from 'class-validator';
+import { IsNotEmpty, Min, Max, IsUrl, Length } from 'class-validator';
 export class CreateWishlistDto {
-  @Min(1)
-  @Max(250)
+  @Length(1, 200)
   @IsNotEmpty()
   name: string;
 
+  @Length(0, 1500)
+  description: string;
+
   @IsNotEmpty()
+  @IsUrl()
   image: string;
+
+  //items: any;
 }
