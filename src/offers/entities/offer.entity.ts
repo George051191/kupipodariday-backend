@@ -22,10 +22,10 @@ export class Offer {
   @UpdateDateColumn()
   updateAt: Date;
 
-  @ManyToOne(() => User, (user) => user.offers)
-  user: string;
+  @ManyToOne(() => User, (user) => user.id)
+  user: User;
 
-  @ManyToOne(() => Wish, (item) => item.offers)
+  @ManyToOne(() => Wish, (wish) => wish.id)
   item: Wish;
 
   @Column()

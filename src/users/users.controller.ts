@@ -56,7 +56,7 @@ export class UsersController {
   findCurrentUser(@Param('username') username: string) {
     return this.usersService.find({ username: username });
   }
-
+  @UseGuards(JwtGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(+id);

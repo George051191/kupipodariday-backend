@@ -31,7 +31,7 @@ export class UsersService {
       },
       relations: {
         wishes: true,
-        offers: true,
+        //offers: true,
       },
     });
   }

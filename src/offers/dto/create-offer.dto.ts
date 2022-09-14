@@ -8,5 +8,5 @@ export class CreateOfferDto {
   hidden: boolean;
 
   @IsNotEmpty()
-  itemId: number;
+  item: number;
 }

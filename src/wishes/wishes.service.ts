@@ -62,7 +62,13 @@ export class WishesService {
         id: id,
       },
       relations: {
-        offers: true,
+        offers: {
+          user: {
+            wishes: true,
+            wishlists: true,
+            offers: true,
+          },
+        },
         owner: true,
       },
     });
