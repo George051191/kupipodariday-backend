@@ -40,9 +40,10 @@ export class UsersService {
     return this.usersRepository.findOneBy({ id });
   }
 
-  find(options: any) {
+  find(options: any, conditions?: any) {
     return this.usersRepository.findOne({
       where: options,
+      select: conditions,
     });
   }
 

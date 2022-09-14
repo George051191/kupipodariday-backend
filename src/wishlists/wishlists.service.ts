@@ -28,7 +28,11 @@ export class WishlistsService {
   }
 
   findAll() {
-    return this.wishelistsRepository.find();
+    return this.wishelistsRepository.find({
+      relations: {
+        owner: true,
+      },
+    });
   }
 
   findOne(id: number) {
