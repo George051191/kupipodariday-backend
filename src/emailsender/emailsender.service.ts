@@ -5,11 +5,12 @@ import nodemailer from 'nodemailer';
 export class EmailSender {
   async sendEmail(mails: string[], message: string, path: string) {
     const transporter = nodemailer.createTransport({
-      host: 'smtp.yandex.ru',
+      service: 'Yandex',
+      /* host: 'smtp.yandex.ru',
       port: 465,
-      secure: true,
+      secure: true, */
       auth: {
-        user: 'mysuperlogingeo',
+        user: 'mysuperlogingeo@yandex.ru',
         pass: 'pdgokodlivbpctdi',
       },
     });

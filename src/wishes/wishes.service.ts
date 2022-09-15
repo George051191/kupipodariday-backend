@@ -17,6 +17,7 @@ export class WishesService {
       ...createWishDto,
       owner: owner,
       copied: 0,
+      raised: 0,
     });
   }
 
@@ -32,6 +33,7 @@ export class WishesService {
           wishes: true,
           wishlists: true,
         },
+        offers: true,
       },
       order: {
         createdAt: 'DESC',
@@ -51,6 +53,7 @@ export class WishesService {
           wishes: true,
           wishlists: true,
         },
+        offers: true,
       },
       take: 20,
     });
@@ -76,14 +79,24 @@ export class WishesService {
 
   async update(
     id: number,
-    updateWishDto: UpdateWishDto,
+    updateWishDto?: UpdateWishDto,
     owner?: User,
     copied?: number,
+    raised?: number,
   ): Promise<Wish> {
     await this.wishesRepository.update(id, {
       ...updateWishDto,
       owner: owner,
       copied: copied,
+      raised: raised,
+    });
+    return this.findOne(id);
+  }
+
+  async updateRised(id: number, updateWishDto: UpdateWishDto, raised: number) {
+    await this.wishesRepository.update(id, {
+      ...updateWishDto,
+      raised: raised,
     });
     return this.findOne(id);
   }

@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { EmailSender } from 'src/emailsender/emailsender.service';
 import { User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { WishesService } from 'src/wishes/wishes.service';
@@ -13,20 +14,60 @@ export class OffersService {
   constructor(
     private readonly userservice: UsersService,
     private readonly wishesService: WishesService,
+    private readonly emailservice: EmailSender,
     @InjectRepository(Offer)
     public offersRepository: Repository<Offer>,
   ) {}
 
   async create(createOfferDto: CreateOfferDto, user: User) {
-    const { item } = createOfferDto;
+    const { item, amount } = createOfferDto;
     const wish = await this.wishesService.findOne(item);
+    const { name, description, image, price, raised } = wish;
     if (wish.owner.id === user.id) {
+      throw new HttpException(
+        {
+          status: HttpStatus.CONFLICT,
+          error: 'Запрещено отправлять деньги на собственные подарки',
+        },
+        HttpStatus.CONFLICT,
+      );
+    }
+    if (wish.price < amount + wish.raised) {
+      throw new HttpException(
+        {
+          status: HttpStatus.CONFLICT,
+          error: `Внесите не больше этой суммы: ${wish.price - wish.raised} `,
+        },
+        HttpStatus.CONFLICT,
+      );
+    }
+
+    const updatedWish = await this.wishesService.updateRised(
+      item,
+      {
+        name,
+        description,
+        image,
+        price,
+      },
+      raised + amount,
+    );
+    console.log(wish.raised + amount);
+    if (updatedWish.raised === updatedWish.price) {
+      const usersMails = updatedWish.offers.map((item) => {
+        return item.user.email;
+      });
+      await this.emailservice.sendEmail(
+        usersMails,
+        updatedWish.link,
+        updatedWish.image,
+      );
       return;
     }
     return this.offersRepository.save({
       ...createOfferDto,
       user: user,
-      item: wish,
+      item: updatedWish,
     });
   }
 

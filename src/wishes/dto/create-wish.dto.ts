@@ -15,4 +15,6 @@ export class CreateWishDto {
 
   @IsNotEmpty()
   description: string;
+
+  raised?: number;
 }
