@@ -1,14 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import nodemailer from 'nodemailer';
+import * as nodemailer from 'nodemailer';
 
 @Injectable()
 export class EmailSender {
   async sendEmail(mails: string[], message: string, path: string) {
     const transporter = nodemailer.createTransport({
-      service: 'Yandex',
-      /* host: 'smtp.yandex.ru',
+      host: 'smtp.yandex.ru',
       port: 465,
-      secure: true, */
+      secure: true,
       auth: {
         user: 'mysuperlogingeo@yandex.ru',
         pass: 'pdgokodlivbpctdi',

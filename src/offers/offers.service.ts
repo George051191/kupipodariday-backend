@@ -24,6 +24,7 @@ export class OffersService {
     const wish = await this.wishesService.findOne(item);
     const { name, description, image, price, raised } = wish;
     if (wish.owner.id === user.id) {
+      console.log(wish.owner.id, user.id);
       throw new HttpException(
         {
           status: HttpStatus.CONFLICT,
