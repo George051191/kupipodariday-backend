@@ -6,6 +6,8 @@ import {
   UpdateDateColumn,
   OneToMany,
   ManyToOne,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { IsEmail, IsNotEmpty, Min, Max, IsUrl, Length } from 'class-validator';
 import { Wish } from 'src/wishes/entities/wish.entity';
@@ -34,8 +36,9 @@ export class Wishlist {
   @Column()
   image: string;
 
-  @OneToMany(() => Wish, (items) => items.wishlist)
-  items: Wish[];
+  @ManyToMany(() => Wish, (items) => items.id)
+  @JoinTable()
+  items: Wish[] | number[];
 
   @ManyToOne(() => User, (user) => user.id)
   owner: User;

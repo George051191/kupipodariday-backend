@@ -2,7 +2,7 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Wish } from './entities/wish.entity';
 import { User } from 'src/users/entities/user.entity';
 
@@ -21,8 +21,12 @@ export class WishesService {
     });
   }
 
-  findAll() {
-    return this.wishesRepository.find();
+  findAll(options?: any) {
+    return this.wishesRepository.find({
+      where: {
+        id: In(options),
+      },
+    });
   }
 
   findLast() {

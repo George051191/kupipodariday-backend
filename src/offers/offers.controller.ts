@@ -23,24 +23,24 @@ export class OffersController {
   create(@Body() createOfferDto: CreateOfferDto, @Req() req: any) {
     return this.offersService.create(createOfferDto, req.user);
   }
-
+  @UseGuards(JwtGuard)
   @Get()
   findAll() {
     return this.offersService.findAll();
   }
-
+  @UseGuards(JwtGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.offersService.findOne(+id);
   }
 
-  /*  @Patch(':id')
+  /*   @Patch(':id')
   update(@Param('id') id: string, @Body() updateOfferDto: UpdateOfferDto) {
     return this.offersService.update(+id, updateOfferDto);
-  } */
+  } 
 
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.offersService.remove(+id);
-  }
+  } */
 }

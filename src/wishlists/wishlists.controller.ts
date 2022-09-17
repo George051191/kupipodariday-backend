@@ -27,27 +27,28 @@ export class WishlistsController {
     const owner = await this.usersService.findOne(req.user.id);
     return this.wishlistsService.create(createWishlistDto, owner);
   }
-
+  @UseGuards(JwtGuard)
   @Get()
   findAll() {
     return this.wishlistsService.findAll();
   }
-
+  @UseGuards(JwtGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.wishlistsService.find(+id);
   }
-
+  @UseGuards(JwtGuard)
   @Patch(':id')
   update(
     @Param('id') id: string,
     @Body() updateWishlistDto: UpdateWishlistDto,
+    @Req() req: any,
   ) {
-    return this.wishlistsService.update(+id, updateWishlistDto);
+    return this.wishlistsService.update(+id, updateWishlistDto, req.user.id);
   }
-
+  @UseGuards(JwtGuard)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.wishlistsService.remove(+id);
+  remove(@Param('id') id: string, @Req() req: any) {
+    return this.wishlistsService.remove(+id, req.user.id);
   }
 }

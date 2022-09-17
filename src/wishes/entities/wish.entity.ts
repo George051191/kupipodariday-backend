@@ -8,6 +8,7 @@ import {
   ManyToOne,
   JoinColumn,
   JoinTable,
+  ManyToMany,
 } from 'typeorm';
 import {
   IsInt,
@@ -73,6 +74,7 @@ export class Wish {
   })
   copied: number;
 
-  @ManyToOne(() => Wishlist, (wishlist) => wishlist.items)
-  wishlist: Wishlist;
+  @ManyToMany(() => Wishlist, (wishlists) => wishlists.items)
+  @JoinTable()
+  wishlists: Wishlist[];
 }
