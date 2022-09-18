@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -31,10 +31,24 @@ export class UsersService {
       },
       relations: {
         wishes: true,
-        //offers: true,
+        offers: true,
       },
     });
   }
+
+  /* findUserWishes(name: string) {
+    return this.usersRepository.find({
+      where: {
+        username: name,
+      },
+      select: {
+        wishes: {
+          offers: true,
+          wishlists: true,
+        },
+      },
+    });
+  } */
 
   findOne(id: number): Promise<User> {
     return this.usersRepository.findOneBy({ id });

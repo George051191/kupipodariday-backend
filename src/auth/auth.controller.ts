@@ -1,4 +1,11 @@
-import { Controller, Post, UseGuards, Req, Body } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  UseGuards,
+  Req,
+  Body,
+  BadRequestException,
+} from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { AuthService } from './auth.service';
 import { LocalGuard } from '../guards/local.guard';
@@ -13,8 +20,12 @@ export class AuthController {
 
   @Post('signup')
   async signup(@Body() createUserDto: CreateUserDto) {
-    const user = await this.usersService.create(createUserDto);
-    return this.authService.auth(user);
+    try {
+      const user = await this.usersService.create(createUserDto);
+      return this.authService.auth(user);
+    } catch (error) {
+      return new BadRequestException(error.message);
+    }
   }
 
   @UseGuards(LocalGuard)

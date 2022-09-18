@@ -9,6 +9,9 @@ import {
   UseGuards,
   Req,
   ForbiddenException,
+  NotFoundException,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import { WishesService } from './wishes.service';
 import { CreateWishDto } from './dto/create-wish.dto';
@@ -50,6 +53,9 @@ export class WishesController {
   @Post(':id/copy')
   async copyWish(@Param('id') id: string, @Req() req: any) {
     const wish = await this.wishesService.findOne(+id);
+    if (!wish) {
+      throw new NotFoundException();
+    }
     const {
       name,
       description,

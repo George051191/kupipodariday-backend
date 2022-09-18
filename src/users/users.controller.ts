@@ -40,6 +40,12 @@ export class UsersController {
     return this.usersService.find({ username: req.user.username });
   }
 
+  /* @UseGuards(JwtGuard)
+  @Get('me/wishes')
+  findUserWishes(@Req() req: any) {
+    return this.usersService.findUserWishes(req.user.username);
+  } */
+
   @UseGuards(JwtGuard)
   @Post('find')
   findMany(@Body() body: { username: string; email: string }) {

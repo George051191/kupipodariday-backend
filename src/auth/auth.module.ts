@@ -7,7 +7,8 @@ import { JwtModule } from '@nestjs/jwt';
 import { LocalStrategy } from './local.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthController } from './auth.controller';
-
+import * as dotenv from 'dotenv';
+dotenv.config();
 @Module({
   imports: [
     UsersModule,
@@ -16,7 +17,7 @@ import { AuthController } from './auth.controller';
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
-        secret: configService.get(process.env.JWT_SECRET),
+        secret: `${process.env.JWT_SECRET}`,
         signOptions: { expiresIn: '1h' },
       }),
       inject: [ConfigService],

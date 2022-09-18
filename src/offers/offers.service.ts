@@ -1,4 +1,10 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EmailSender } from 'src/emailsender/emailsender.service';
 import { User } from 'src/users/entities/user.entity';
@@ -22,6 +28,9 @@ export class OffersService {
   async create(createOfferDto: CreateOfferDto, user: User) {
     const { item, amount } = createOfferDto;
     const wish = await this.wishesService.findOne(item);
+    if (!wish) {
+      throw new NotFoundException();
+    }
     const { name, description, image, price, raised } = wish;
     if (wish.owner.id === user.id) {
       throw new HttpException(
