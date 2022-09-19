@@ -12,12 +12,14 @@ import {
   NotFoundException,
   Inject,
   forwardRef,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { WishesService } from './wishes.service';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
 import { JwtGuard } from 'src/guards/jwt.guard';
 import { UsersService } from 'src/users/users.service';
+import { RequestWithUser } from 'src/utils/utilstypes';
 
 @Controller('wishes')
 export class WishesController {
@@ -28,15 +30,12 @@ export class WishesController {
 
   @UseGuards(JwtGuard)
   @Post()
-  async create(@Body() createWishDto: CreateWishDto, @Req() req: any) {
+  async create(
+    @Body() createWishDto: CreateWishDto,
+    @Req() req: RequestWithUser,
+  ) {
     const owner = await this.usersService.findOne(req.user.id);
-    delete owner.password;
     return this.wishesService.create(createWishDto, owner);
-  }
-
-  @Get()
-  findAll() {
-    return this.wishesService.findAll();
   }
 
   @Get('last')
@@ -51,7 +50,7 @@ export class WishesController {
 
   @UseGuards(JwtGuard)
   @Post(':id/copy')
-  async copyWish(@Param('id') id: string, @Req() req: any) {
+  async copyWish(@Param('id') id: string, @Req() req: RequestWithUser) {
     const wish = await this.wishesService.findOne(+id);
     if (!wish) {
       throw new NotFoundException();
@@ -83,13 +82,13 @@ export class WishesController {
   async update(
     @Param('id') id: string,
     @Body() updateWishDto: UpdateWishDto,
-    @Req() req: any,
+    @Req() req: RequestWithUser,
   ) {
     return this.wishesService.updateWithChecks(+id, updateWishDto, req);
   }
   @UseGuards(JwtGuard)
   @Delete(':id')
-  remove(@Param('id') id: string, @Req() req: any) {
+  remove(@Param('id') id: string, @Req() req: RequestWithUser) {
     return this.wishesService.removeWithChecks(+id, req);
   }
 

@@ -36,10 +36,6 @@ export class Wishlist {
   @Column()
   image: string;
 
-  @ManyToMany(() => Wish, (items) => items.id)
-  @JoinTable()
-  items: Wish[] | number[];
-
   @ManyToOne(() => User, (user) => user.id)
   owner: User;
 }

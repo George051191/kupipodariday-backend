@@ -45,6 +45,7 @@ export class User {
   @IsEmail()
   @Column({
     unique: true,
+    select: false,
   })
   email: string;
 

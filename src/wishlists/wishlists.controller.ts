@@ -14,6 +14,7 @@ import { CreateWishlistDto } from './dto/create-wishlist.dto';
 import { UpdateWishlistDto } from './dto/update-wishlist.dto';
 import { JwtGuard } from 'src/guards/jwt.guard';
 import { UsersService } from 'src/users/users.service';
+import { RequestWithUser } from 'src/utils/utilstypes';
 
 @Controller('wishlists')
 export class WishlistsController {
@@ -23,7 +24,10 @@ export class WishlistsController {
   ) {}
   @UseGuards(JwtGuard)
   @Post()
-  async create(@Body() createWishlistDto: CreateWishlistDto, @Req() req: any) {
+  async create(
+    @Body() createWishlistDto: CreateWishlistDto,
+    @Req() req: RequestWithUser,
+  ) {
     const owner = await this.usersService.findOne(req.user.id);
     return this.wishlistsService.create(createWishlistDto, owner);
   }
@@ -42,13 +46,13 @@ export class WishlistsController {
   update(
     @Param('id') id: string,
     @Body() updateWishlistDto: UpdateWishlistDto,
-    @Req() req: any,
+    @Req() req: RequestWithUser,
   ) {
     return this.wishlistsService.update(+id, updateWishlistDto, req.user.id);
   }
   @UseGuards(JwtGuard)
   @Delete(':id')
-  remove(@Param('id') id: string, @Req() req: any) {
+  remove(@Param('id') id: string, @Req() req: RequestWithUser) {
     return this.wishlistsService.remove(+id, req.user.id);
   }
 }

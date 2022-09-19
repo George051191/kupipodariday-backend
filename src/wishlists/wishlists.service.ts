@@ -22,22 +22,16 @@ export class WishlistsService {
     private wishelistsRepository: Repository<Wishlist>,
   ) {}
   async create(createWishlistsDto: CreateWishlistDto, owner: User) {
-    const { items } = createWishlistsDto;
-    const wishes = await this.wishesService.findAll(items);
-
     const wishList = await this.wishelistsRepository.save({
       ...createWishlistsDto,
-      items: wishes,
       owner: owner,
     });
-    console.log(wishList);
     return this.wishelistsRepository.find({
       where: {
         id: wishList.id,
       },
       relations: {
         owner: true,
-        items: true,
       },
     });
   }
@@ -78,15 +72,7 @@ export class WishlistsService {
     if (userId !== wishList.owner.id) {
       throw new ForbiddenException();
     }
-    /*   const { items } = updateWishlistDto;
-    let wishes: Wish[];
-    for (const item of items) {
-      const wish = await this.wishesService.findOne(item);
-      wishes.push(wish);
-    } */
-    await this.wishelistsRepository.update(id, {
-      ...updateWishlistDto,
-    });
+    await this.wishelistsRepository.update(id, updateWishlistDto);
     return this.findOne(id);
   }
 

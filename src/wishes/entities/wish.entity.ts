@@ -60,9 +60,10 @@ export class Wish {
   @ManyToOne(() => User, (user) => user.id)
   owner: User;
 
-  @Min(1)
-  @Max(1024)
-  @Column()
+  @Length(1, 1240)
+  @Column({
+    nullable: true,
+  })
   description: string;
 
   @OneToMany(() => Offer, (offers) => offers.item)
@@ -73,8 +74,4 @@ export class Wish {
     nullable: true,
   })
   copied: number;
-
-  @ManyToMany(() => Wishlist, (wishlists) => wishlists.items)
-  @JoinTable()
-  wishlists: Wishlist[];
 }

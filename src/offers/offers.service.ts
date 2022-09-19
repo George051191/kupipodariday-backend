@@ -26,8 +26,8 @@ export class OffersService {
   ) {}
 
   async create(createOfferDto: CreateOfferDto, user: User) {
-    const { item, amount } = createOfferDto;
-    const wish = await this.wishesService.findOne(item);
+    const { itemId, amount } = createOfferDto;
+    const wish = await this.wishesService.findOne(+itemId);
     if (!wish) {
       throw new NotFoundException();
     }
@@ -52,7 +52,7 @@ export class OffersService {
     }
 
     const updatedWish = await this.wishesService.updateRised(
-      item,
+      itemId,
       {
         name,
         description,
@@ -100,11 +100,6 @@ export class OffersService {
   findOne(id: number) {
     return this.offersRepository.findOneBy({ id });
   }
-
-  /*  async update(id: number, updateOfferDto: UpdateOfferDto) {
-    await this.offersRepository.update(id, updateOfferDto);
-    return this.findOne(id);
-  } */
 
   async remove(id: number) {
     await this.offersRepository.delete(id);

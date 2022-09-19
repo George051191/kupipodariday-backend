@@ -1,4 +1,9 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  forwardRef,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -36,19 +41,18 @@ export class UsersService {
     });
   }
 
-  /* findUserWishes(name: string) {
-    return this.usersRepository.find({
+  async findUserWishes(name: string) {
+    const user = await this.usersRepository.findOne({
       where: {
         username: name,
       },
-      select: {
-        wishes: {
-          offers: true,
-          wishlists: true,
-        },
+      relations: {
+        wishes: true,
       },
     });
-  } */
+    console.log(user.wishes);
+    return user.wishes;
+  }
 
   findOne(id: number): Promise<User> {
     return this.usersRepository.findOneBy({ id });
@@ -61,12 +65,19 @@ export class UsersService {
     });
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
-    await this.usersRepository.update(id, updateUserDto);
-    return this.findOne(id);
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    try {
+      await this.usersRepository.update(id, updateUserDto);
+      return this.findOne(id);
+    } catch (error) {
+      return new BadRequestException(error.message);
+    }
   }
 
   async remove(id: number) {
     await this.usersRepository.delete(id);
   }
 }
+
+/* 1663600810
+   1663601444 */

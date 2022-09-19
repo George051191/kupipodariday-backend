@@ -11,7 +11,4 @@ export class CreateWishlistDto {
   @IsNotEmpty()
   @IsUrl()
   image: string;
-
-  @IsNotEmpty()
-  items: number[];
 }

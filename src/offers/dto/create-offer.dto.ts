@@ -6,7 +6,6 @@ export class CreateOfferDto {
 
   @IsNotEmpty()
   hidden: boolean;
-
   @IsNotEmpty()
-  item: number;
+  itemId: number;
 }

@@ -37,7 +37,6 @@ export class WishesService {
           wishes: true,
           wishlists: true,
         },
-        offers: true,
       },
       order: {
         createdAt: 'DESC',
@@ -57,7 +56,6 @@ export class WishesService {
           wishes: true,
           wishlists: true,
         },
-        offers: true,
       },
       take: 20,
     });

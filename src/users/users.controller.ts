@@ -12,13 +12,14 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import bcrypt from 'bcryptjs';
+import * as bcrypt from 'bcryptjs';
 import { JwtGuard } from 'src/guards/jwt.guard';
+import { RequestWithUser } from 'src/utils/utilstypes';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
-
+  @UseGuards(JwtGuard)
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
     const { password, ...res } = createUserDto;
@@ -36,15 +37,10 @@ export class UsersController {
 
   @UseGuards(JwtGuard)
   @Get('me')
-  findUser(@Req() req: any) {
+  findUser(@Req() req: RequestWithUser) {
+    console.log(req.user);
     return this.usersService.find({ username: req.user.username });
   }
-
-  /* @UseGuards(JwtGuard)
-  @Get('me/wishes')
-  findUserWishes(@Req() req: any) {
-    return this.usersService.findUserWishes(req.user.username);
-  } */
 
   @UseGuards(JwtGuard)
   @Post('find')
@@ -55,6 +51,18 @@ export class UsersController {
     if (body.email) {
       return this.usersService.find({ email: body.email });
     }
+  }
+
+  @UseGuards(JwtGuard)
+  @Get('me/wishes')
+  findCurrentUserWishes(@Req() req: any) {
+    return this.usersService.findUserWishes(req.user.username);
+  }
+
+  @UseGuards(JwtGuard)
+  @Get(':username/wishes')
+  findUserWishes(@Req() req: any) {
+    return this.usersService.findUserWishes(req.user.username);
   }
 
   @UseGuards(JwtGuard)
@@ -70,13 +78,17 @@ export class UsersController {
 
   @UseGuards(JwtGuard)
   @Patch('me')
-  update(@Req() req, @Body() updateUserDto: UpdateUserDto) {
+  update(@Req() req: RequestWithUser, @Body() updateUserDto: UpdateUserDto) {
     const { password, ...res } = updateUserDto;
-    return bcrypt
-      .hash(password, 10)
-      .then((hash: string) =>
-        this.usersService.update(req.user.id, { password: hash, ...res }),
-      );
+    console.log(password);
+    if (password !== undefined) {
+      return bcrypt
+        .hash(password, 10)
+        .then((hash: string) =>
+          this.usersService.update(req.user.id, { password: hash, ...res }),
+        );
+    }
+    return this.usersService.update(req.user.id, updateUserDto);
   }
 
   @Delete(':id')
