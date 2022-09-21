@@ -16,7 +16,7 @@ dotenv.config();
     ConfigModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
+      useFactory: async () => ({
         secret: `${process.env.JWT_SECRET}`,
         signOptions: { expiresIn: '1h' },
       }),

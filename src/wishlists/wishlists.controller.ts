@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Req,
+  BadRequestException,
 } from '@nestjs/common';
 import { WishlistsService } from './wishlists.service';
 import { CreateWishlistDto } from './dto/create-wishlist.dto';
@@ -39,6 +40,9 @@ export class WishlistsController {
   @UseGuards(JwtGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
+    if (isNaN(+id)) {
+      return new BadRequestException();
+    }
     return this.wishlistsService.find(+id);
   }
   @UseGuards(JwtGuard)
@@ -48,11 +52,17 @@ export class WishlistsController {
     @Body() updateWishlistDto: UpdateWishlistDto,
     @Req() req: RequestWithUser,
   ) {
+    if (isNaN(+id)) {
+      return new BadRequestException();
+    }
     return this.wishlistsService.update(+id, updateWishlistDto, req.user.id);
   }
   @UseGuards(JwtGuard)
   @Delete(':id')
   remove(@Param('id') id: string, @Req() req: RequestWithUser) {
+    if (isNaN(+id)) {
+      return new BadRequestException();
+    }
     return this.wishlistsService.remove(+id, req.user.id);
   }
 }

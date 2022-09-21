@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -121,6 +125,9 @@ export class WishesService {
 
   async removeWithChecks(id: number, req: any) {
     const wish = await this.findOne(+id);
+    if (!wish) {
+      throw new NotFoundException();
+    }
     if (wish.owner.id !== req.user.id) {
       throw new ForbiddenException();
     }

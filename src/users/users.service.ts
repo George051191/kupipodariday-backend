@@ -1,8 +1,7 @@
 import {
   BadRequestException,
-  forwardRef,
-  Inject,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -50,7 +49,9 @@ export class UsersService {
         wishes: true,
       },
     });
-    console.log(user.wishes);
+    if (!user) {
+      return new NotFoundException();
+    }
     return user.wishes;
   }
 
@@ -78,6 +79,3 @@ export class UsersService {
     await this.usersRepository.delete(id);
   }
 }
-
-/* 1663600810
-   1663601444 */

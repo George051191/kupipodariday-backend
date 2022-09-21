@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, Min, Max, IsUrl } from 'class-validator';
+import { IsNotEmpty, Min } from 'class-validator';
 
 export class CreateOfferDto {
   @Min(1)

@@ -8,11 +8,8 @@ import {
   Delete,
   UseGuards,
   Req,
-  ForbiddenException,
   NotFoundException,
-  Inject,
-  forwardRef,
-  ParseIntPipe,
+  BadRequestException,
 } from '@nestjs/common';
 import { WishesService } from './wishes.service';
 import { CreateWishDto } from './dto/create-wish.dto';
@@ -37,12 +34,12 @@ export class WishesController {
     const owner = await this.usersService.findOne(req.user.id);
     return this.wishesService.create(createWishDto, owner);
   }
-
+  @UseGuards(JwtGuard)
   @Get('last')
   getlast() {
     return this.wishesService.findLast();
   }
-
+  @UseGuards(JwtGuard)
   @Get('top')
   getTop() {
     return this.wishesService.findTops();
@@ -51,6 +48,9 @@ export class WishesController {
   @UseGuards(JwtGuard)
   @Post(':id/copy')
   async copyWish(@Param('id') id: string, @Req() req: RequestWithUser) {
+    if (isNaN(+id)) {
+      return new BadRequestException();
+    }
     const wish = await this.wishesService.findOne(+id);
     if (!wish) {
       throw new NotFoundException();
@@ -84,17 +84,27 @@ export class WishesController {
     @Body() updateWishDto: UpdateWishDto,
     @Req() req: RequestWithUser,
   ) {
+    if (isNaN(+id)) {
+      return new BadRequestException();
+    }
     return this.wishesService.updateWithChecks(+id, updateWishDto, req);
   }
   @UseGuards(JwtGuard)
   @Delete(':id')
-  remove(@Param('id') id: string, @Req() req: RequestWithUser) {
-    return this.wishesService.removeWithChecks(+id, req);
+  async remove(@Param('id') id: string, @Req() req: RequestWithUser) {
+    const wish = await this.wishesService.removeWithChecks(+id, req);
+    if (!wish) {
+      throw new NotFoundException();
+    }
+    return wish;
   }
 
   @UseGuards(JwtGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
+    if (isNaN(+id)) {
+      return new BadRequestException();
+    }
     return this.wishesService.findOne(+id);
   }
 }

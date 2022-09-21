@@ -1,5 +1,5 @@
-import { IsNotEmpty, Min, Max, IsUrl, Length } from 'class-validator';
-import { Wish } from 'src/wishes/entities/wish.entity';
+import { IsNotEmpty, IsUrl, Length } from 'class-validator';
+
 export class CreateWishlistDto {
   @Length(1, 200)
   @IsNotEmpty()

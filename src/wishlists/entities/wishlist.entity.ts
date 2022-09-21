@@ -4,13 +4,10 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  OneToMany,
   ManyToOne,
-  ManyToMany,
-  JoinTable,
 } from 'typeorm';
-import { IsEmail, IsNotEmpty, Min, Max, IsUrl, Length } from 'class-validator';
-import { Wish } from 'src/wishes/entities/wish.entity';
+import { IsUrl, Length } from 'class-validator';
+
 import { User } from 'src/users/entities/user.entity';
 
 @Entity()

@@ -3,15 +3,12 @@ import { ExtractJwt } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
-import { ConfigService } from '@nestjs/config';
+
 import * as dotenv from 'dotenv';
 dotenv.config();
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(
-    private usersService: UsersService,
-    configService: ConfigService,
-  ) {
+  constructor(private usersService: UsersService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
@@ -20,7 +17,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(jwtPayload: { sub: number }) {
-    console.log(jwtPayload);
     const user = this.usersService.findOne(jwtPayload.sub);
     if (!user) {
       throw new UnauthorizedException();

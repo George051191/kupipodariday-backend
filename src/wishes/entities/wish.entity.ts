@@ -6,23 +6,11 @@ import {
   UpdateDateColumn,
   OneToMany,
   ManyToOne,
-  JoinColumn,
-  JoinTable,
-  ManyToMany,
 } from 'typeorm';
-import {
-  IsInt,
-  IsEmail,
-  IsNotEmpty,
-  Min,
-  Max,
-  IsUrl,
-  Length,
-} from 'class-validator';
-import { isInt16Array } from 'util/types';
+import { IsInt, IsUrl, Length } from 'class-validator';
+
 import { User } from 'src/users/entities/user.entity';
 import { Offer } from 'src/offers/entities/offer.entity';
-import { Wishlist } from 'src/wishlists/entities/wishlist.entity';
 
 @Entity()
 export class Wish {
@@ -71,7 +59,8 @@ export class Wish {
 
   @IsInt()
   @Column({
-    nullable: true,
+    nullable: false,
+    default: 0,
   })
   copied: number;
 }

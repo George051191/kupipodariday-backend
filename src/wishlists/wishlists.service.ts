@@ -1,18 +1,15 @@
 import {
   ForbiddenException,
-  forwardRef,
-  Inject,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
-import { Wish } from 'src/wishes/entities/wish.entity';
 import { WishesService } from 'src/wishes/wishes.service';
 import { Repository } from 'typeorm';
 import { CreateWishlistDto } from './dto/create-wishlist.dto';
 import { UpdateWishlistDto } from './dto/update-wishlist.dto';
 import { Wishlist } from './entities/wishlist.entity';
-import { In } from 'typeorm';
 
 @Injectable()
 export class WishlistsService {
@@ -45,11 +42,7 @@ export class WishlistsService {
   }
 
   findOne(id: number) {
-    return this.wishelistsRepository.findOneBy({ id });
-  }
-
-  find(id: number) {
-    return this.wishelistsRepository.find({
+    return this.wishelistsRepository.findOne({
       where: {
         id: id,
       },
@@ -63,14 +56,36 @@ export class WishlistsService {
     });
   }
 
+  async find(id: number) {
+    const wishlists = await this.wishelistsRepository.findOne({
+      where: {
+        id: id,
+      },
+      relations: {
+        owner: {
+          offers: true,
+          wishes: true,
+          wishlists: true,
+        },
+      },
+    });
+    if (!wishlists) {
+      return new NotFoundException();
+    }
+    return wishlists;
+  }
+
   async update(
     id: number,
     updateWishlistDto: UpdateWishlistDto,
     userId: number,
   ) {
     const wishList = await this.findOne(id);
+    if (!wishList) {
+      return new NotFoundException();
+    }
     if (userId !== wishList.owner.id) {
-      throw new ForbiddenException();
+      return new ForbiddenException();
     }
     await this.wishelistsRepository.update(id, updateWishlistDto);
     return this.findOne(id);
@@ -78,6 +93,9 @@ export class WishlistsService {
 
   async remove(id: number, userId: number) {
     const wishList = await this.findOne(id);
+    if (!wishList) {
+      return new NotFoundException();
+    }
     if (userId !== wishList.owner.id) {
       throw new ForbiddenException();
     }

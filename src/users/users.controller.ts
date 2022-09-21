@@ -5,9 +5,12 @@ import {
   Body,
   Patch,
   Param,
-  Delete,
   Req,
   UseGuards,
+  NotFoundException,
+  HttpException,
+  HttpStatus,
+  BadRequestException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -44,12 +47,20 @@ export class UsersController {
 
   @UseGuards(JwtGuard)
   @Post('find')
-  findMany(@Body() body: { username: string; email: string }) {
+  async findMany(@Body() body: { username: string; email: string }) {
     if (body.username) {
-      return this.usersService.find({ username: body.username });
+      const user = await this.usersService.find({ username: body.username });
+      if (!user) {
+        return new NotFoundException();
+      }
+      return user;
     }
     if (body.email) {
-      return this.usersService.find({ email: body.email });
+      const user = await this.usersService.find({ email: body.email });
+      if (!user) {
+        return new NotFoundException();
+      }
+      return user;
     }
   }
 
@@ -61,26 +72,50 @@ export class UsersController {
 
   @UseGuards(JwtGuard)
   @Get(':username/wishes')
-  findUserWishes(@Req() req: any) {
-    return this.usersService.findUserWishes(req.user.username);
+  async findUserWishes(@Req() req: any, @Param('username') username: string) {
+    const wishes = await this.usersService.findUserWishes(username);
+    if (!wishes) {
+      return new NotFoundException();
+    }
+    return wishes;
   }
-
+  //// поиск по имени пользователя
   @UseGuards(JwtGuard)
   @Get(':username')
-  findCurrentUser(@Param('username') username: string) {
-    return this.usersService.find({ username: username });
+  async findCurrentUser(@Param('username') username: string) {
+    const user = await this.usersService.find({ username: username });
+    if (!user) {
+      return new NotFoundException();
+    }
+    return user;
   }
+  //// поиск по айдишнику
   @UseGuards(JwtGuard)
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    if (isNaN(+id)) {
+      return new BadRequestException();
+    }
+    const user = await this.usersService.findOne(+id);
+    if (!user) {
+      return new NotFoundException();
+    }
+    return user;
   }
 
   @UseGuards(JwtGuard)
   @Patch('me')
   update(@Req() req: RequestWithUser, @Body() updateUserDto: UpdateUserDto) {
+    if (Object.keys(updateUserDto).length === 0) {
+      return new HttpException(
+        {
+          status: HttpStatus.CONFLICT,
+          error: 'Укажите какие данные нужно поменять',
+        },
+        HttpStatus.CONFLICT,
+      );
+    }
     const { password, ...res } = updateUserDto;
-    console.log(password);
     if (password !== undefined) {
       return bcrypt
         .hash(password, 10)
@@ -89,10 +124,5 @@ export class UsersController {
         );
     }
     return this.usersService.update(req.user.id, updateUserDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
   }
 }

@@ -3,15 +3,13 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
-  Delete,
   Req,
   UseGuards,
+  BadRequestException,
 } from '@nestjs/common';
 import { OffersService } from './offers.service';
 import { CreateOfferDto } from './dto/create-offer.dto';
-import { UpdateOfferDto } from './dto/update-offer.dto';
 import { JwtGuard } from 'src/guards/jwt.guard';
 
 @Controller('offers')
@@ -31,6 +29,9 @@ export class OffersController {
   @UseGuards(JwtGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
+    if (isNaN(+id)) {
+      return new BadRequestException();
+    }
     return this.offersService.findOne(+id);
   }
 }

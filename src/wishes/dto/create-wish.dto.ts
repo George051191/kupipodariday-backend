@@ -1,11 +1,4 @@
-import {
-  IsNotEmpty,
-  Min,
-  Max,
-  IsUrl,
-  Length,
-  IsOptional,
-} from 'class-validator';
+import { IsNotEmpty, Min, IsUrl, Length } from 'class-validator';
 export class CreateWishDto {
   @IsNotEmpty()
   @Length(1, 250)

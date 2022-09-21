@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   HttpException,
   HttpStatus,
   Injectable,
@@ -10,9 +9,8 @@ import { EmailSender } from 'src/emailsender/emailsender.service';
 import { User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { WishesService } from 'src/wishes/wishes.service';
-import { DeepPartial, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { CreateOfferDto } from './dto/create-offer.dto';
-import { UpdateOfferDto } from './dto/update-offer.dto';
 import { Offer } from './entities/offer.entity';
 
 @Injectable()
@@ -24,10 +22,20 @@ export class OffersService {
     @InjectRepository(Offer)
     public offersRepository: Repository<Offer>,
   ) {}
-
+  ///метод создания офера с проверками
   async create(createOfferDto: CreateOfferDto, user: User) {
     const { itemId, amount } = createOfferDto;
     const wish = await this.wishesService.findOne(+itemId);
+    ///условие если цена уже равна собранным средствам
+    if (wish.price === wish.raised) {
+      throw new HttpException(
+        {
+          status: HttpStatus.CONFLICT,
+          error: 'Средства на подарок уже собраны',
+        },
+        HttpStatus.CONFLICT,
+      );
+    }
     if (!wish) {
       throw new NotFoundException();
     }
@@ -61,6 +69,7 @@ export class OffersService {
       },
       raised + amount,
     );
+    ///условие если количество внесенных средсв уже равно цене отправляем оповещения
     if (updatedWish.raised === updatedWish.price) {
       const usersMails = updatedWish.offers.map((item) => {
         return item.user.email;

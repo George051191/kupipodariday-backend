@@ -5,10 +5,8 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
-  JoinTable,
-  ManyToOne,
 } from 'typeorm';
-import { IsEmail, IsNotEmpty, Min, Max, IsUrl, Length } from 'class-validator';
+import { IsEmail, IsNotEmpty, Length } from 'class-validator';
 import { Wish } from 'src/wishes/entities/wish.entity';
 import { Offer } from 'src/offers/entities/offer.entity';
 import { Wishlist } from 'src/wishlists/entities/wishlist.entity';
@@ -45,7 +43,6 @@ export class User {
   @IsEmail()
   @Column({
     unique: true,
-    select: false,
   })
   email: string;
 
