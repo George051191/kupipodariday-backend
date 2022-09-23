@@ -26,6 +26,9 @@ export class OffersService {
   async create(createOfferDto: CreateOfferDto, user: User) {
     const { itemId, amount } = createOfferDto;
     const wish = await this.wishesService.findOne(+itemId);
+    if (!wish) {
+      throw new NotFoundException();
+    }
     ///условие если цена уже равна собранным средствам
     if (wish.price === wish.raised) {
       throw new HttpException(
@@ -35,9 +38,6 @@ export class OffersService {
         },
         HttpStatus.CONFLICT,
       );
-    }
-    if (!wish) {
-      throw new NotFoundException();
     }
     const { name, description, image, price, raised } = wish;
     if (wish.owner.id === user.id) {
@@ -106,8 +106,12 @@ export class OffersService {
     });
   }
 
-  findOne(id: number) {
-    return this.offersRepository.findOneBy({ id });
+  async findOne(id: number) {
+    const offer = await this.offersRepository.findOneBy({ id });
+    if (!offer) {
+      throw new NotFoundException();
+    }
+    return offer;
   }
 
   async remove(id: number) {

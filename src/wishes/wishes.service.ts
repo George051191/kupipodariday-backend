@@ -25,6 +25,10 @@ export class WishesService {
     });
   }
 
+  async find(options: any) {
+    return this.wishesRepository.find(options);
+  }
+
   findAll(options?: any) {
     return this.wishesRepository.find({
       where: {

@@ -47,21 +47,21 @@ export class UsersController {
 
   @UseGuards(JwtGuard)
   @Post('find')
-  async findMany(@Body() body: { username: string; email: string }) {
-    if (body.username) {
-      const user = await this.usersService.find({ username: body.username });
-      if (!user) {
-        return new NotFoundException();
-      }
-      return user;
+  async findMany(@Body() body: { query: string }) {
+    if (Object.keys(body).length === 0) {
+      return new HttpException(
+        {
+          status: HttpStatus.CONFLICT,
+          error: 'Укажите почту для поиска юзера',
+        },
+        HttpStatus.CONFLICT,
+      );
     }
-    if (body.email) {
-      const user = await this.usersService.find({ email: body.email });
-      if (!user) {
-        return new NotFoundException();
-      }
-      return user;
+    const user = await this.usersService.find({ email: body.query });
+    if (!user) {
+      return new NotFoundException();
     }
+    return user;
   }
 
   @UseGuards(JwtGuard)

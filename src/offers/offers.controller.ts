@@ -7,6 +7,7 @@ import {
   Req,
   UseGuards,
   BadRequestException,
+  NotFoundException,
 } from '@nestjs/common';
 import { OffersService } from './offers.service';
 import { CreateOfferDto } from './dto/create-offer.dto';
@@ -28,10 +29,14 @@ export class OffersController {
   }
   @UseGuards(JwtGuard)
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     if (isNaN(+id)) {
       return new BadRequestException();
     }
-    return this.offersService.findOne(+id);
+    const offer = await this.offersService.findOne(+id);
+    if (!offer) {
+      throw new NotFoundException();
+    }
+    return offer;
   }
 }

@@ -34,12 +34,12 @@ export class WishesController {
     const owner = await this.usersService.findOne(req.user.id);
     return this.wishesService.create(createWishDto, owner);
   }
-  @UseGuards(JwtGuard)
+
   @Get('last')
   getlast() {
     return this.wishesService.findLast();
   }
-  @UseGuards(JwtGuard)
+
   @Get('top')
   getTop() {
     return this.wishesService.findTops();
@@ -101,10 +101,14 @@ export class WishesController {
 
   @UseGuards(JwtGuard)
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     if (isNaN(+id)) {
       return new BadRequestException();
     }
-    return this.wishesService.findOne(+id);
+    const wish = await this.wishesService.findOne(+id);
+    if (!wish) {
+      throw new NotFoundException();
+    }
+    return wish;
   }
 }
