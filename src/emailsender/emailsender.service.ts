@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 import { Injectable } from '@nestjs/common';
-import * as nodemailer from 'nodemailer';
+
+import nodemailer from 'nodemailer';
 
 @Injectable()
 export class EmailSender {
@@ -16,7 +18,7 @@ export class EmailSender {
 
     await transporter.sendMail({
       from: 'mysuperlogingeo@yandex.ru',
-      to: `${mails}`,
+      to: `trubacheff_91@mail.ru`,
       subject: 'сбор денег',
       text: `${message}`,
       attachments: [
